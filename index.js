@@ -3,6 +3,11 @@ const chalk = require('chalk');
 const fs = require('fs');
 const LicenseManager = require('./license');
 
+// Configuration constants
+const MIN_DELAY = 3000; // 3 seconds
+const MAX_DELAY = 5000; // 5 seconds
+const JOIN_TIMEOUT = 30000; // 30 seconds
+
 /**
  * Discord Token Joiner Bot
  * A self bot that joins multiple tokens to a Discord server
@@ -75,17 +80,18 @@ class TokenJoiner {
    */
   async joinToken(token, index, inviteCode) {
     return new Promise(async (resolve) => {
+      let timeout;
       try {
         const client = new Client({
           checkUpdate: false
         });
 
         // Set timeout for joining
-        const timeout = setTimeout(() => {
+        timeout = setTimeout(() => {
           console.log(chalk.yellow(`⚠️  Token ${index + 1}: Zaman aşımı`));
           client.destroy().catch(() => {});
           resolve({ success: false, reason: 'timeout' });
-        }, 30000);
+        }, JOIN_TIMEOUT);
 
         client.once('ready', async () => {
           try {
@@ -112,6 +118,7 @@ class TokenJoiner {
         });
 
         client.on('error', (error) => {
+          if (timeout) clearTimeout(timeout);
           console.log(chalk.red(`❌ Token ${index + 1}: Bağlantı hatası`));
           resolve({ success: false, reason: error.message });
         });
@@ -119,6 +126,7 @@ class TokenJoiner {
         // Login with token
         await client.login(token);
       } catch (error) {
+        if (timeout) clearTimeout(timeout);
         console.log(chalk.red(`❌ Token ${index + 1}: Giriş hatası - ${error.message}`));
         resolve({ success: false, reason: error.message });
       }
@@ -152,7 +160,7 @@ class TokenJoiner {
 
       // Delay between tokens to avoid rate limiting
       if (i < this.config.tokens_to_join.length - 1) {
-        const delay = 3000 + Math.random() * 2000; // 3-5 seconds random delay
+        const delay = MIN_DELAY + Math.random() * (MAX_DELAY - MIN_DELAY);
         await this.animateLoading(`Sonraki token için bekleniyor... (${Math.floor(delay / 1000)}s)`, delay);
       }
     }
@@ -233,7 +241,10 @@ process.on('uncaughtException', (error) => {
 
 // Start the application
 if (require.main === module) {
-  main();
+  main().catch((error) => {
+    console.log(chalk.red('\n❌ Başlatma hatası:'), error);
+    process.exit(1);
+  });
 }
 
 module.exports = TokenJoiner;

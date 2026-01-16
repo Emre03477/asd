@@ -1,6 +1,5 @@
 {
   "license_key": "YOUR_LICENSE_KEY_HERE",
-  "main_token": "YOUR_MAIN_BOT_TOKEN_HERE",
   "tokens_to_join": [
     "TOKEN_1",
     "TOKEN_2",

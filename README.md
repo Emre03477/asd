@@ -45,7 +45,6 @@ cp config.example.json config.json
 ```json
 {
   "license_key": "YOUR_LICENSE_KEY_HERE",
-  "main_token": "YOUR_MAIN_BOT_TOKEN_HERE",
   "tokens_to_join": [
     "TOKEN_1",
     "TOKEN_2",
@@ -75,7 +74,6 @@ node index.js
 | Parametre | Açıklama | Örnek |
 |-----------|----------|-------|
 | `license_key` | api.iamemre.dev lisans anahtarınız | `"abc123xyz789"` |
-| `main_token` | Ana bot token'ı (opsiyonel) | `"YOUR_TOKEN"` |
 | `tokens_to_join` | Sunucuya katılacak token listesi | `["token1", "token2"]` |
 | `invite_code` | Discord davet kodu | `"abc123"` veya `"https://discord.gg/abc123"` |
 

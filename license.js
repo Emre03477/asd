@@ -19,7 +19,6 @@ class LicenseManager {
   async verify() {
     try {
       console.log(chalk.cyan('🔐 Lisans kontrolü yapılıyor...'));
-      console.log(chalk.gray(`📡 API: ${this.apiUrl}?key=${this.licenseKey.substring(0, 8)}...`));
       
       const response = await axios.get(this.apiUrl, {
         params: { key: this.licenseKey },
