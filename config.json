@@ -1,0 +1,7 @@
+{
+  "token": "YOUR_DISCORD_TOKEN_HERE",
+  "mfa_secret": "YOUR_MFA_SECRET_HERE",
+  "guild_id": "YOUR_GUILD_ID_HERE",
+  "target_vanity": "desiredvanity",
+  "check_interval": 0.5
+}
