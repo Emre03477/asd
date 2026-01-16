@@ -1,7 +1,6 @@
 import requests
 import time
 import json
-import pyotp
 from colorama import Fore, Style, init
 
 # Initialize colorama for colored console output
@@ -17,10 +16,10 @@ class DiscordURLSniper:
         """
         self.config = self.load_config(config_path)
         self.token = self.config.get("token")
-        self.mfa_secret = self.config.get("mfa_secret")
+        self.password = self.config.get("password")
         self.guild_id = self.config.get("guild_id")
         self.target_vanity = self.config.get("target_vanity")
-        self.check_interval = self.config.get("check_interval", 0.5)
+        self.check_interval = self.config.get("check_interval", 1.0)
         
         self.base_url = "https://discord.com/api/v9"
         self.headers = {
@@ -44,23 +43,7 @@ class DiscordURLSniper:
             print(f"{Fore.RED}Error: Invalid JSON in config file")
             exit(1)
     
-    def generate_mfa_code(self):
-        """
-        Generate MFA/2FA code using the secret key
-        
-        Returns:
-            str: 6-digit MFA code
-        """
-        if not self.mfa_secret:
-            return None
-        
-        try:
-            totp = pyotp.TOTP(self.mfa_secret)
-            code = totp.now()
-            return code
-        except Exception as e:
-            print(f"{Fore.RED}Error generating MFA code: {e}")
-            return None
+
     
     def check_vanity_available(self, vanity_code):
         """
@@ -110,11 +93,15 @@ class DiscordURLSniper:
             
             # Check if MFA is required
             if response.status_code == 401:
-                response_data = response.json()
-                
-                if response_data.get("code") == 60003:  # MFA required
-                    print(f"{Fore.CYAN}MFA required, generating code...")
-                    return self.claim_vanity_with_mfa(vanity_code)
+                try:
+                    response_data = response.json()
+                    
+                    if response_data.get("code") == 60003:  # MFA required
+                        print(f"{Fore.CYAN}MFA required, using password...")
+                        return self.claim_vanity_with_mfa(vanity_code)
+                except ValueError:
+                    print(f"{Fore.RED}Authentication failed")
+                    return False
             
             elif response.status_code == 200:
                 print(f"{Fore.GREEN}✓ Successfully claimed vanity: {vanity_code}")
@@ -136,7 +123,7 @@ class DiscordURLSniper:
     
     def claim_vanity_with_mfa(self, vanity_code):
         """
-        Claim vanity URL with MFA code
+        Claim vanity URL with MFA (password authentication)
         
         Args:
             vanity_code: The vanity code to claim
@@ -144,30 +131,25 @@ class DiscordURLSniper:
         Returns:
             bool: True if successful, False otherwise
         """
-        mfa_code = self.generate_mfa_code()
-        
-        if not mfa_code:
-            print(f"{Fore.RED}Failed to generate MFA code")
+        if not self.password:
+            print(f"{Fore.RED}Password not configured for MFA authentication")
             return False
         
         url = f"{self.base_url}/guilds/{self.guild_id}/vanity-url"
         
         payload = {
-            "code": vanity_code
+            "code": vanity_code,
+            "password": self.password
         }
         
-        # Add MFA code to headers
-        headers = self.headers.copy()
-        headers["X-Discord-MFA-Authorization"] = mfa_code
-        
         try:
-            response = self.session.patch(url, json=payload, headers=headers)
+            response = self.session.patch(url, json=payload)
             
             if response.status_code == 200:
                 print(f"{Fore.GREEN}✓ Successfully claimed vanity with MFA: {vanity_code}")
                 return True
             elif response.status_code == 401:
-                print(f"{Fore.RED}MFA authentication failed. Check your MFA secret.")
+                print(f"{Fore.RED}MFA authentication failed. Check your password.")
                 return False
             elif response.status_code == 429:
                 retry_after = response.json().get("retry_after", 5)
@@ -192,7 +174,7 @@ class DiscordURLSniper:
         print(f"{Fore.YELLOW}Target vanity: {self.target_vanity}")
         print(f"{Fore.YELLOW}Guild ID: {self.guild_id}")
         print(f"{Fore.YELLOW}Check interval: {self.check_interval}s")
-        print(f"{Fore.YELLOW}MFA enabled: {Fore.GREEN}Yes{Style.RESET_ALL}" if self.mfa_secret else f"{Fore.YELLOW}MFA enabled: {Fore.RED}No{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}MFA enabled: {Fore.GREEN}Yes{Style.RESET_ALL}" if self.password else f"{Fore.YELLOW}MFA enabled: {Fore.RED}No{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{'='*50}\n")
         
         attempt_count = 0

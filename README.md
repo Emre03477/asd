@@ -37,20 +37,20 @@ pip install -r requirements.txt
 ```json
 {
   "token": "YOUR_DISCORD_TOKEN_HERE",
-  "mfa_secret": "YOUR_MFA_SECRET_HERE",
+  "password": "YOUR_ACCOUNT_PASSWORD_HERE",
   "guild_id": "YOUR_GUILD_ID_HERE",
   "target_vanity": "desiredvanity",
-  "check_interval": 0.5
+  "check_interval": 1.0
 }
 ```
 
 ### Configuration Parameters:
 
 - **token**: Your Discord account token
-- **mfa_secret**: Your 2FA secret key (16-character base32 string). Leave empty if MFA is not enabled.
+- **password**: Your Discord account password (required for MFA verification on sensitive operations)
 - **guild_id**: The ID of the Discord server where you want to set the vanity URL
 - **target_vanity**: The vanity URL code you want to snipe
-- **check_interval**: Time in seconds between availability checks (default: 0.5)
+- **check_interval**: Time in seconds between availability checks (default: 1.0)
 
 ### How to Get Your Discord Token:
 
@@ -59,14 +59,6 @@ pip install -r requirements.txt
 3. Go to the `Console` tab
 4. Type: `(webpackChunkdiscord_app.push([[''],{},e=>{m=[];for(let c in e.c)m.push(e.c[c])}]),m).find(m=>m?.exports?.default?.getToken!==void 0).exports.default.getToken()`
 5. Press Enter and copy the token
-
-### How to Get Your MFA Secret:
-
-1. Go to Discord Settings > My Account > Two-Factor Auth
-2. If you're setting up 2FA for the first time, scan the QR code but also note the backup codes
-3. The MFA secret is the 16-character base32 string shown in the setup
-4. If 2FA is already enabled, you may need to disable and re-enable it to see the secret
-5. **Important**: Store this secret securely!
 
 ### How to Get Your Guild ID:
 
@@ -96,7 +88,7 @@ Discord URL Sniper with MFA Support
 ==================================================
 Target vanity: myvanity
 Guild ID: 123456789012345678
-Check interval: 0.5s
+Check interval: 1.0s
 MFA enabled: Yes
 ==================================================
 
@@ -104,7 +96,7 @@ MFA enabled: Yes
 [Attempt 2] Checking availability of 'myvanity'... Taken
 [Attempt 3] Checking availability of 'myvanity'... AVAILABLE!
 Attempting to claim...
-MFA required, generating code...
+MFA required, using password...
 ✓ Successfully claimed vanity with MFA: myvanity
 ==================================================
 SUCCESS! Vanity URL claimed successfully!
@@ -114,7 +106,7 @@ SUCCESS! Vanity URL claimed successfully!
 ## Security Notes
 
 - **Never share your Discord token** - It provides full access to your account
-- **Keep your MFA secret secure** - Store it in a safe location
+- **Keep your password secure** - Store it safely in the config.json file
 - **Use at your own risk** - Automated tools may violate Discord's Terms of Service
 - **Consider using an alt account** - Avoid risking your main account
 - The config.json file contains sensitive information - add it to .gitignore
@@ -124,18 +116,18 @@ SUCCESS! Vanity URL claimed successfully!
 1. **Monitoring**: The script continuously checks if the target vanity URL is available by making requests to Discord's API
 2. **Detection**: When a vanity URL returns a 404 status, it means it's available
 3. **Claiming**: The script immediately attempts to claim the URL for your server
-4. **MFA Handling**: If your account has 2FA enabled, the script automatically generates the required code using your MFA secret
+4. **MFA Handling**: If your account has 2FA enabled, the script automatically uses your password for MFA verification
 5. **Success**: Once claimed, your server's vanity URL is updated
 
 ## Troubleshooting
 
-### "Failed to generate MFA code"
-- Check that your `mfa_secret` is correct (16-character base32 string)
-- Ensure the secret hasn't expired or been regenerated
+### "Password not configured for MFA authentication"
+- Make sure you have added your Discord account password to the `password` field in config.json
+- This is required for accounts with 2FA enabled
 
 ### "MFA authentication failed"
-- Verify your MFA secret is current and correctly entered
-- Try disabling and re-enabling 2FA to get a fresh secret
+- Verify your password is correct in the config.json file
+- Ensure you're using the correct Discord account password
 
 ### "Rate limited"
 - Discord has rate limits to prevent abuse
@@ -150,7 +142,6 @@ SUCCESS! Vanity URL claimed successfully!
 ## Dependencies
 
 - **requests**: HTTP library for making API calls
-- **pyotp**: Library for generating Time-based One-Time Passwords (TOTP)
 - **colorama**: Library for colored terminal output
 
 ## Disclaimer
