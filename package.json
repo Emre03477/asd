@@ -1,0 +1,22 @@
+{
+  "name": "discord-token-joiner",
+  "version": "1.0.0",
+  "description": "Discord.js v13 self bot token joiner with license system",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "discord",
+    "selfbot",
+    "token",
+    "joiner"
+  ],
+  "author": "Emre",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js-selfbot-v13": "^2.14.12",
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2"
+  }
+}
