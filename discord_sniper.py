@@ -99,8 +99,15 @@ class DiscordURLSniper:
                     if response_data.get("code") == 60003:  # MFA required
                         print(f"{Fore.CYAN}MFA required, using password...")
                         return self.claim_vanity_with_mfa(vanity_code)
+                    else:
+                        print(f"{Fore.RED}Authentication failed")
+                        print(f"{Fore.RED}Status Code: {response.status_code}")
+                        print(f"{Fore.RED}Response: {response.text}")
+                        return False
                 except ValueError:
                     print(f"{Fore.RED}Authentication failed")
+                    print(f"{Fore.RED}Status Code: {response.status_code}")
+                    print(f"{Fore.RED}Raw Response: {response.text}")
                     return False
             
             elif response.status_code == 200:
@@ -150,6 +157,13 @@ class DiscordURLSniper:
                 return True
             elif response.status_code == 401:
                 print(f"{Fore.RED}MFA authentication failed. Check your password.")
+                print(f"{Fore.RED}Status Code: {response.status_code}")
+                print(f"{Fore.RED}Raw Response: {response.text}")
+                try:
+                    response_json = response.json()
+                    print(f"{Fore.RED}Response JSON: {response_json}")
+                except:
+                    pass
                 return False
             elif response.status_code == 429:
                 retry_after = response.json().get("retry_after", 5)
