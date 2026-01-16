@@ -162,7 +162,7 @@ class DiscordURLSniper:
                 try:
                     response_json = response.json()
                     print(f"{Fore.RED}Response JSON: {response_json}")
-                except:
+                except (ValueError, json.JSONDecodeError):
                     pass
                 return False
             elif response.status_code == 429:
