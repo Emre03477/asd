@@ -1,0 +1,7 @@
+{
+  "token": "YOUR_DISCORD_TOKEN_HERE",
+  "password": "YOUR_ACCOUNT_PASSWORD_HERE",
+  "guild_id": "YOUR_GUILD_ID_HERE",
+  "target_vanity": "desiredvanity",
+  "check_interval": 1.0
+}
