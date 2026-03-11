@@ -1,0 +1,25 @@
+{
+  "name": "bostanai",
+  "version": "1.0.0",
+  "description": "BostanAI – a powerful and intelligent AI assistant",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Emre03477/asd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Emre03477/asd/issues"
+  },
+  "homepage": "https://github.com/Emre03477/asd#readme",
+  "dependencies": {
+    "openai": "^6.27.0"
+  }
+}
